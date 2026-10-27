@@ -2,14 +2,14 @@
 
 #include "Exercice1/Student.h"
 #include "Exercise2/Course.h"
+#include "Exercise3/ScoreTable.h"
 
 
 
-using namespace std;
 
 static void callExercise1();
 static void callExercise2();
-
+static void callExercise3();
 
 static void summarize(const Student& s) {
      s.print();
@@ -18,8 +18,9 @@ static Student& getBestStudent(Student students[], int count );
 
 int main() {
 
-     // callExercise1();
+     callExercise1();
      callExercise2();
+     callExercise3();
      return 0;
 }
 
@@ -44,7 +45,7 @@ try {
 
      Student& topStudent = getBestStudent(students, 3);
 
-     cout<< "---Top Student---" << endl;
+     std::cout<< "---Top Student---" << std::endl;
      summarize(topStudent);
 
      double& bestGrade = topStudent.getBest();
@@ -55,10 +56,10 @@ try {
           bestGrade = 6.00;
      }
 
-     cout << "---After Grade Raise---" << endl;
+     std::cout << "---After Grade Raise---" << std::endl;
      summarize(topStudent);
 }catch (const std:: exception& e) {
-     cerr <<"Error: "<< e.what() << endl;
+     std::cerr <<"Error: "<< e.what() <<std::endl;
 }
 
 
@@ -68,12 +69,12 @@ static void callExercise2() {
      Course c1("C++ Programming", 5);
      Course c2("Data Structures", 3);
 
-     // Създаваме трима студенти[cite: 1]
+
      Student s1("John Doe", "12345");
-     Student s2("Mariq Petrova", "12346");
+     Student s2("Maria Petrova", "12346");
      Student s3("Gogo Gogo", "12347");
 
-     // Записваме тримата студенти в първия курс[cite: 1]
+
      c1.enroll(s1);
      c1.enroll(s2);
      c1.enroll(s3);
@@ -82,16 +83,54 @@ static void callExercise2() {
      printReport(c1);
      printReport(c2);
 
-     // Прехвърляме един студент (s2) във втория курс[cite: 1]
+
      std::cout << "\n--- Making the transfer ---\n";
      transfer(s2, c1, c2); //[cite: 1]
 
-     // Отпечатваме отчетите и за двата курса[cite: 1]
+
      std::cout << "\n--- After transfer ---";
      printReport(c1); //[cite: 1]
      printReport(c2); //[cite: 1]
 }
 
+static void callExercise3() {
+     int rows = 3;
+     int cols = 4;
+
+
+     ScoreTable table(rows, cols);
+
+
+     double player0Scores[] = {10.5, 12.0, 8.5, 14.0};
+     double player1Scores[] = {15.0, 9.5, 11.0, 13.5};
+     double player2Scores[] = {7.0, 8.5, 9.0, 10.0};
+
+
+     table.fillRow(0, player0Scores, 4);
+     table.fillRow(1, player1Scores, 4);
+     table.fillRow(2, player2Scores, 4);
+
+
+     table.at(2, 3) = 12.5;
+
+
+     std::cout << "--- Score Table---\n";
+     for (int i = 0; i < rows; ++i) {
+          std::cout << "Player " << i << ": ";
+          for (int j = 0; j < cols; ++j) {
+               std::cout << table.at(i, j) << " ";
+          }
+          std::cout << "\n";
+     }
+     std::cout << "---------------------------\n\n";
+
+
+     std::cout << "Compare player 0 and 1\n";
+     compareRows(table, 0, 1);
+
+     std::cout << "\nCompare player 1 and 2  \n";
+     compareRows(table, 1, 2);
+}
 
 void transfer(Student& s, Course& from, Course& to) {
      int index = -1;
@@ -134,7 +173,38 @@ void printReport(const Course& c) {
 
      std::cout << "\n=== Course Report: " << c.title << " ===\n";
      std::cout << "Enrolled students: " << c.currentStudents << " / " << c.maxStudents << "\n";
-     std::cout << "Ocupations: " << percentage << "%\n";
+     std::cout << "Occupations: " << percentage << "%\n";
+}
+
+void compareRows(const ScoreTable& t, int row1, int row2) {
+     if (row1 < 0 || row1 >= t.rows || row2 < 0 || row2 >= t.rows) {
+          std::cout << "Invalid row index!"<< std::endl;
+          return;
+     }
+
+     double sum1 =0;
+     double sum2 =0;
+
+     for (int j =0 ; j<t.columns ; ++j) {
+          sum1 += t.at(row1,j);
+          sum2 += t.at(row2,j);
+     }
+     double average1 = sum1 / t.columns;
+     double average2 = sum2 / t.columns;
+
+
+     std::cout<< "Average score for player "<< row1<<": "<< average1<< std::endl;
+     std::cout << "Average score for player "<< row2<<": "<< average2<< std::endl;
+
+     if (average1 > average2) {
+          std::cout <<"Player " << row1<<" has better stats"<< std::endl;
+     }
+     else if (average2 > average1) {
+          std::cout <<"Player " << row2<<" has better stats"<< std::endl;
+     }
+     else {
+          std::cout<<"Both players are equal";
+     }
 }
 Student & getBestStudent(Student students[], int count) {
      if (count<=0) {
